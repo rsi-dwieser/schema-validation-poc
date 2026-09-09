@@ -3,8 +3,8 @@
 import { type DefaultError, queryOptions, type UseMutationOptions } from '@tanstack/react-query';
 
 import { client } from '../client.gen';
-import { Default, type Options, Posts, Users } from '../sdk.gen';
-import type { CreatePostData, CreatePostError, CreatePostResponse, CreateUserData, CreateUserError, CreateUserResponse, DeletePostData, DeletePostError, DeletePostResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetPostData, GetPostError, GetPostResponse, GetUserData, GetUserError, GetUserResponse, HealthData, HealthResponse, ListPostsData, ListPostsResponse, ListUsersData, ListUsersResponse, UpdatePostData, UpdatePostError, UpdatePostResponse, UpdateUserData, UpdateUserError, UpdateUserResponse } from '../types.gen';
+import { Comments, Default, type Options, Posts, Users } from '../sdk.gen';
+import type { CreateCommentData, CreateCommentError, CreateCommentResponse, CreatePostData, CreatePostError, CreatePostResponse, CreateUserData, CreateUserError, CreateUserResponse, DeleteCommentData, DeleteCommentError, DeleteCommentResponse, DeletePostData, DeletePostError, DeletePostResponse, DeleteUserData, DeleteUserError, DeleteUserResponse, GetCommentData, GetCommentError, GetCommentResponse, GetPostData, GetPostError, GetPostResponse, GetUserData, GetUserError, GetUserResponse, HealthData, HealthResponse, ListCommentsData, ListCommentsResponse, ListPostsData, ListPostsResponse, ListUsersData, ListUsersResponse, UpdateCommentData, UpdateCommentError, UpdateCommentResponse, UpdatePostData, UpdatePostError, UpdatePostResponse, UpdateUserData, UpdateUserError, UpdateUserResponse } from '../types.gen';
 
 export type QueryKey<TOptions extends Options> = [
     Pick<TOptions, 'baseUrl' | 'body' | 'headers' | 'path' | 'query'> & {
@@ -203,6 +203,93 @@ export const updatePostMutation = (options?: Partial<Options<UpdatePostData>>): 
     const mutationOptions: UseMutationOptions<UpdatePostResponse, UpdatePostError, Options<UpdatePostData>> = {
         mutationFn: async (fnOptions) => {
             const { data } = await Posts.updatePost({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const listCommentsQueryKey = (options?: Options<ListCommentsData>) => createQueryKey('listComments', options);
+
+/**
+ * List Comments
+ */
+export const listCommentsOptions = (options?: Options<ListCommentsData>) => queryOptions<ListCommentsResponse, DefaultError, ListCommentsResponse, ReturnType<typeof listCommentsQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await Comments.listComments({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: listCommentsQueryKey(options)
+});
+
+/**
+ * Create Comment
+ */
+export const createCommentMutation = (options?: Partial<Options<CreateCommentData>>): UseMutationOptions<CreateCommentResponse, CreateCommentError, Options<CreateCommentData>> => {
+    const mutationOptions: UseMutationOptions<CreateCommentResponse, CreateCommentError, Options<CreateCommentData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await Comments.createComment({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+/**
+ * Delete Comment
+ */
+export const deleteCommentMutation = (options?: Partial<Options<DeleteCommentData>>): UseMutationOptions<DeleteCommentResponse, DeleteCommentError, Options<DeleteCommentData>> => {
+    const mutationOptions: UseMutationOptions<DeleteCommentResponse, DeleteCommentError, Options<DeleteCommentData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await Comments.deleteComment({
+                ...options,
+                ...fnOptions,
+                throwOnError: true
+            });
+            return data;
+        }
+    };
+    return mutationOptions;
+};
+
+export const getCommentQueryKey = (options: Options<GetCommentData>) => createQueryKey('getComment', options);
+
+/**
+ * Get Comment
+ */
+export const getCommentOptions = (options: Options<GetCommentData>) => queryOptions<GetCommentResponse, GetCommentError, GetCommentResponse, ReturnType<typeof getCommentQueryKey>>({
+    queryFn: async ({ queryKey, signal }) => {
+        const { data } = await Comments.getComment({
+            ...options,
+            ...queryKey[0],
+            signal,
+            throwOnError: true
+        });
+        return data;
+    },
+    queryKey: getCommentQueryKey(options)
+});
+
+/**
+ * Update Comment
+ */
+export const updateCommentMutation = (options?: Partial<Options<UpdateCommentData>>): UseMutationOptions<UpdateCommentResponse, UpdateCommentError, Options<UpdateCommentData>> => {
+    const mutationOptions: UseMutationOptions<UpdateCommentResponse, UpdateCommentError, Options<UpdateCommentData>> = {
+        mutationFn: async (fnOptions) => {
+            const { data } = await Comments.updateComment({
                 ...options,
                 ...fnOptions,
                 throwOnError: true

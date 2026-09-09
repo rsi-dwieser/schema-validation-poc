@@ -39,3 +39,22 @@ class PostUpdate(BaseModel):
 class Post(PostBase):
     id: int
     created_at: datetime
+
+
+class CommentBase(BaseModel):
+    post_id: int
+    author: str = Field(min_length=1, max_length=100)
+    body: str = Field(min_length=1, max_length=1000)
+
+
+class CommentCreate(CommentBase):
+    pass
+
+
+class CommentUpdate(BaseModel):
+    body: str | None = Field(default=None, min_length=1, max_length=1000)
+
+
+class Comment(CommentBase):
+    id: int
+    created_at: datetime
