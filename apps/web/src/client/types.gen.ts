@@ -5,6 +5,60 @@ export type ClientOptions = {
 };
 
 /**
+ * Comment
+ */
+export type Comment = {
+    /**
+     * Post Id
+     */
+    post_id: number;
+    /**
+     * Author
+     */
+    author: string;
+    /**
+     * Body
+     */
+    body: string;
+    /**
+     * Id
+     */
+    id: number;
+    /**
+     * Created At
+     */
+    created_at: string;
+};
+
+/**
+ * CommentCreate
+ */
+export type CommentCreate = {
+    /**
+     * Post Id
+     */
+    post_id: number;
+    /**
+     * Author
+     */
+    author: string;
+    /**
+     * Body
+     */
+    body: string;
+};
+
+/**
+ * CommentUpdate
+ */
+export type CommentUpdate = {
+    /**
+     * Body
+     */
+    body?: string | null;
+};
+
+/**
  * HTTPValidationError
  */
 export type HttpValidationError = {
@@ -407,6 +461,139 @@ export type UpdatePostResponses = {
 };
 
 export type UpdatePostResponse = UpdatePostResponses[keyof UpdatePostResponses];
+
+export type ListCommentsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/comments';
+};
+
+export type ListCommentsResponses = {
+    /**
+     * Response Listcomments
+     *
+     * Successful Response
+     */
+    200: Array<Comment>;
+};
+
+export type ListCommentsResponse = ListCommentsResponses[keyof ListCommentsResponses];
+
+export type CreateCommentData = {
+    body: CommentCreate;
+    path?: never;
+    query?: never;
+    url: '/comments';
+};
+
+export type CreateCommentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type CreateCommentError = CreateCommentErrors[keyof CreateCommentErrors];
+
+export type CreateCommentResponses = {
+    /**
+     * Successful Response
+     */
+    201: Comment;
+};
+
+export type CreateCommentResponse = CreateCommentResponses[keyof CreateCommentResponses];
+
+export type DeleteCommentData = {
+    body?: never;
+    path: {
+        /**
+         * Comment Id
+         */
+        comment_id: number;
+    };
+    query?: never;
+    url: '/comments/{comment_id}';
+};
+
+export type DeleteCommentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type DeleteCommentError = DeleteCommentErrors[keyof DeleteCommentErrors];
+
+export type DeleteCommentResponses = {
+    /**
+     * Successful Response
+     */
+    204: void;
+};
+
+export type DeleteCommentResponse = DeleteCommentResponses[keyof DeleteCommentResponses];
+
+export type GetCommentData = {
+    body?: never;
+    path: {
+        /**
+         * Comment Id
+         */
+        comment_id: number;
+    };
+    query?: never;
+    url: '/comments/{comment_id}';
+};
+
+export type GetCommentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type GetCommentError = GetCommentErrors[keyof GetCommentErrors];
+
+export type GetCommentResponses = {
+    /**
+     * Successful Response
+     */
+    200: Comment;
+};
+
+export type GetCommentResponse = GetCommentResponses[keyof GetCommentResponses];
+
+export type UpdateCommentData = {
+    body: CommentUpdate;
+    path: {
+        /**
+         * Comment Id
+         */
+        comment_id: number;
+    };
+    query?: never;
+    url: '/comments/{comment_id}';
+};
+
+export type UpdateCommentErrors = {
+    /**
+     * Validation Error
+     */
+    422: HttpValidationError;
+};
+
+export type UpdateCommentError = UpdateCommentErrors[keyof UpdateCommentErrors];
+
+export type UpdateCommentResponses = {
+    /**
+     * Successful Response
+     */
+    200: Comment;
+};
+
+export type UpdateCommentResponse = UpdateCommentResponses[keyof UpdateCommentResponses];
 
 export type HealthData = {
     body?: never;

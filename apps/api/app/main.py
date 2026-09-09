@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.routers import posts, users
+from app.routers import comments, posts, users
 
 app = FastAPI(
     title="Schema Validation POC API",
-    description="Minimal Users/Posts API used to demonstrate FastAPI -> OpenAPI -> hey-api codegen.",
+    description="Minimal Users/Posts/Comments API used to demonstrate FastAPI -> OpenAPI -> hey-api codegen.",
     version="0.1.0",
 )
 
@@ -18,6 +18,7 @@ app.add_middleware(
 
 app.include_router(users.router)
 app.include_router(posts.router)
+app.include_router(comments.router)
 
 
 @app.get("/health", operation_id="health")

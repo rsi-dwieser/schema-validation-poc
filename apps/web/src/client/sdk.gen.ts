@@ -2,8 +2,8 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreatePostData, CreatePostErrors, CreatePostResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeletePostData, DeletePostErrors, DeletePostResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, GetPostData, GetPostErrors, GetPostResponses, GetUserData, GetUserErrors, GetUserResponses, HealthData, HealthResponses, ListPostsData, ListPostsResponses, ListUsersData, ListUsersResponses, UpdatePostData, UpdatePostErrors, UpdatePostResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses } from './types.gen';
-import { zCreatePostResponse, zCreateUserResponse, zDeletePostResponse, zDeleteUserResponse, zGetPostResponse, zGetUserResponse, zHealthResponse, zListPostsResponse, zListUsersResponse, zUpdatePostResponse, zUpdateUserResponse } from './zod.gen';
+import type { CreateCommentData, CreateCommentErrors, CreateCommentResponses, CreatePostData, CreatePostErrors, CreatePostResponses, CreateUserData, CreateUserErrors, CreateUserResponses, DeleteCommentData, DeleteCommentErrors, DeleteCommentResponses, DeletePostData, DeletePostErrors, DeletePostResponses, DeleteUserData, DeleteUserErrors, DeleteUserResponses, GetCommentData, GetCommentErrors, GetCommentResponses, GetPostData, GetPostErrors, GetPostResponses, GetUserData, GetUserErrors, GetUserResponses, HealthData, HealthResponses, ListCommentsData, ListCommentsResponses, ListPostsData, ListPostsResponses, ListUsersData, ListUsersResponses, UpdateCommentData, UpdateCommentErrors, UpdateCommentResponses, UpdatePostData, UpdatePostErrors, UpdatePostResponses, UpdateUserData, UpdateUserErrors, UpdateUserResponses } from './types.gen';
+import { zCreateCommentResponse, zCreatePostResponse, zCreateUserResponse, zDeleteCommentResponse, zDeletePostResponse, zDeleteUserResponse, zGetCommentResponse, zGetPostResponse, zGetUserResponse, zHealthResponse, zListCommentsResponse, zListPostsResponse, zListUsersResponse, zUpdateCommentResponse, zUpdatePostResponse, zUpdateUserResponse } from './zod.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -140,6 +140,71 @@ export class Posts {
         return (options.client ?? client).patch<UpdatePostResponses, UpdatePostErrors, ThrowOnError>({
             responseValidator: async (data) => await zUpdatePostResponse.parseAsync(data),
             url: '/posts/{post_id}',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+}
+
+export class Comments {
+    /**
+     * List Comments
+     */
+    public static listComments<ThrowOnError extends boolean = false>(options?: Options<ListCommentsData, ThrowOnError>): RequestResult<ListCommentsResponses, unknown, ThrowOnError> {
+        return (options?.client ?? client).get<ListCommentsResponses, unknown, ThrowOnError>({
+            responseValidator: async (data) => await zListCommentsResponse.parseAsync(data),
+            url: '/comments',
+            ...options
+        });
+    }
+    
+    /**
+     * Create Comment
+     */
+    public static createComment<ThrowOnError extends boolean = false>(options: Options<CreateCommentData, ThrowOnError>): RequestResult<CreateCommentResponses, CreateCommentErrors, ThrowOnError> {
+        return (options.client ?? client).post<CreateCommentResponses, CreateCommentErrors, ThrowOnError>({
+            responseValidator: async (data) => await zCreateCommentResponse.parseAsync(data),
+            url: '/comments',
+            ...options,
+            headers: {
+                'Content-Type': 'application/json',
+                ...options.headers
+            }
+        });
+    }
+    
+    /**
+     * Delete Comment
+     */
+    public static deleteComment<ThrowOnError extends boolean = false>(options: Options<DeleteCommentData, ThrowOnError>): RequestResult<DeleteCommentResponses, DeleteCommentErrors, ThrowOnError> {
+        return (options.client ?? client).delete<DeleteCommentResponses, DeleteCommentErrors, ThrowOnError>({
+            responseValidator: async (data) => await zDeleteCommentResponse.parseAsync(data),
+            url: '/comments/{comment_id}',
+            ...options
+        });
+    }
+    
+    /**
+     * Get Comment
+     */
+    public static getComment<ThrowOnError extends boolean = false>(options: Options<GetCommentData, ThrowOnError>): RequestResult<GetCommentResponses, GetCommentErrors, ThrowOnError> {
+        return (options.client ?? client).get<GetCommentResponses, GetCommentErrors, ThrowOnError>({
+            responseValidator: async (data) => await zGetCommentResponse.parseAsync(data),
+            url: '/comments/{comment_id}',
+            ...options
+        });
+    }
+    
+    /**
+     * Update Comment
+     */
+    public static updateComment<ThrowOnError extends boolean = false>(options: Options<UpdateCommentData, ThrowOnError>): RequestResult<UpdateCommentResponses, UpdateCommentErrors, ThrowOnError> {
+        return (options.client ?? client).patch<UpdateCommentResponses, UpdateCommentErrors, ThrowOnError>({
+            responseValidator: async (data) => await zUpdateCommentResponse.parseAsync(data),
+            url: '/comments/{comment_id}',
             ...options,
             headers: {
                 'Content-Type': 'application/json',

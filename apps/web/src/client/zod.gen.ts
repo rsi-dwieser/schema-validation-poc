@@ -3,6 +3,33 @@
 import * as z from 'zod';
 
 /**
+ * Comment
+ */
+export const zComment = z.object({
+    post_id: z.int(),
+    author: z.string().min(1).max(100),
+    body: z.string().min(1).max(1000),
+    id: z.int(),
+    created_at: z.iso.datetime()
+});
+
+/**
+ * CommentCreate
+ */
+export const zCommentCreate = z.object({
+    post_id: z.int(),
+    author: z.string().min(1).max(100),
+    body: z.string().min(1).max(1000)
+});
+
+/**
+ * CommentUpdate
+ */
+export const zCommentUpdate = z.object({
+    body: z.string().min(1).max(1000).nullish()
+});
+
+/**
  * Post
  */
 export const zPost = z.object({
@@ -157,6 +184,49 @@ export const zUpdatePostPath = z.object({
  * Successful Response
  */
 export const zUpdatePostResponse = zPost;
+
+/**
+ * Response Listcomments
+ *
+ * Successful Response
+ */
+export const zListCommentsResponse = z.array(zComment);
+
+export const zCreateCommentBody = zCommentCreate;
+
+/**
+ * Successful Response
+ */
+export const zCreateCommentResponse = zComment;
+
+export const zDeleteCommentPath = z.object({
+    comment_id: z.int()
+});
+
+/**
+ * Successful Response
+ */
+export const zDeleteCommentResponse = z.void();
+
+export const zGetCommentPath = z.object({
+    comment_id: z.int()
+});
+
+/**
+ * Successful Response
+ */
+export const zGetCommentResponse = zComment;
+
+export const zUpdateCommentBody = zCommentUpdate;
+
+export const zUpdateCommentPath = z.object({
+    comment_id: z.int()
+});
+
+/**
+ * Successful Response
+ */
+export const zUpdateCommentResponse = zComment;
 
 /**
  * Response Health
