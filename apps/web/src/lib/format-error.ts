@@ -1,4 +1,4 @@
-import type { HttpValidationError } from '../client/types.gen'
+import type { HttpValidationError } from '../client/users/types.gen'
 
 type ZodLikeError = {
   issues: Array<{ path: Array<PropertyKey>; message: string }>

@@ -7,14 +7,16 @@ generate everything the frontend needs from it.
 FastAPI + Pydantic  --(OpenAPI)-->  @hey-api/openapi-ts  --> TanStack Query hooks + Zod schemas
 ```
 
-The domain is intentionally tiny (a `User` CRUD API) so the interesting part —
-the codegen pipeline — stays easy to see.
+The domain is intentionally tiny (`User` and `Post` CRUD APIs) so the
+interesting part — the codegen pipeline — stays easy to see.
 
 ## Layout
 
 - [apps/api](apps/api) — FastAPI backend. `app/models.py` has the Pydantic
-  schemas (`UserCreate`, `UserUpdate`, `User`); `app/routers/users.py` has the
-  CRUD endpoints (in-memory store, no DB — this is a POC).
+  schemas; `app/routers/users.py` and `app/routers/posts.py` have the CRUD
+  endpoints (in-memory stores, no DB — this is a POC). Each router is tagged
+  (`tags=["users"]` / `tags=["posts"]`), which the frontend config uses to
+  split generated output — see below.
 - [apps/web](apps/web) — Vite + React + TypeScript frontend. `src/client` is
   **generated, not committed** — see below.
 
@@ -30,12 +32,30 @@ pnpm install
 1. FastAPI derives an OpenAPI schema from the Pydantic models.
 2. `apps/api/scripts/export_openapi.py` writes that schema to `apps/api/openapi.json`.
 3. `apps/web/openapi-ts.config.ts` points `@hey-api/openapi-ts` at that file and
-   generates, into `apps/web/src/client`:
+   generates, for each tag, into its own subdirectory (`apps/web/src/client/users`,
+   `apps/web/src/client/posts`):
    - `types.gen.ts` — TS types mirroring the Pydantic models
    - `sdk.gen.ts` / `client.gen.ts` — a typed fetch client
    - `@tanstack/react-query.gen.ts` — `xOptions` / `xMutation` helpers for `useQuery`/`useMutation`
    - `zod.gen.ts` — Zod schemas (e.g. `zUserCreate`) mirroring the same models, used to
      validate the create/edit form client-side before it ever hits the network
+
+### Why the output is split by resource
+
+`openapi-ts.config.ts` exports an **array** of two job configs (same
+`../api/openapi.json` input, different `parser.filters.tags.include`, different
+`output` directory) instead of one. hey-api's generated files are otherwise
+organized by *artifact type*, not by resource — a single job would put every
+tag's operations in the same `sdk.gen.ts`/`zod.gen.ts`/etc. no matter how many
+resources you add. Filtering by tag into separate jobs is what actually
+produces separate files per endpoint on disk.
+
+The tradeoff: each job is a fully independent generation, so `src/client/users`
+and `src/client/posts` each get their own copy of the fetch client core
+(`client.gen.ts`, `core/*`). `main.tsx` calls `setConfig()` on both. That's a
+small amount of duplication in exchange for genuinely independent per-resource
+output — worth revisiting if the domain grows enough to want a single shared
+client instead.
 
 Run the whole pipeline with:
 

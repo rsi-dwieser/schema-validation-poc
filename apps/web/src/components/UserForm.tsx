@@ -1,6 +1,6 @@
 import { useForm } from '@tanstack/react-form'
 import type { z } from 'zod'
-import { zUserCreate } from '../client/zod.gen'
+import { zUserCreate } from '../client/users/zod.gen'
 
 export type UserFormValues = z.infer<typeof zUserCreate>
 
