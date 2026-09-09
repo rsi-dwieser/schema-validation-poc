@@ -10,7 +10,15 @@ import {
 import { formatApiError } from '../lib/format-error'
 import { UserForm, type UserFormValues } from './UserForm'
 
-export function UserList() {
+// Mirrors MALFORMED_USER_ID in apps/api/app/routers/users.py — always returns a
+// response that violates the User schema, to demo the SDK's response validator.
+const MALFORMED_USER_ID = 999
+
+type UserListProps = {
+  onSelectUser: (userId: number) => void
+}
+
+export function UserList({ onSelectUser }: UserListProps) {
   const queryClient = useQueryClient()
   const usersQuery = useQuery(listUsersOptions())
   const [creating, setCreating] = useState(false)
@@ -130,6 +138,7 @@ export function UserList() {
                     </div>
                   ) : (
                     <div className="row-actions">
+                      <button onClick={() => onSelectUser(user.id)}>View</button>
                       <button onClick={() => setEditingId(user.id)}>Edit</button>
                       <button className="danger" onClick={() => setConfirmingDeleteId(user.id)}>
                         Delete
@@ -142,6 +151,12 @@ export function UserList() {
           )}
         </tbody>
       </table>
+
+      <p className="subtitle">
+        <button onClick={() => onSelectUser(MALFORMED_USER_ID)}>
+          View user {MALFORMED_USER_ID} (always returns a schema-invalid response)
+        </button>
+      </p>
     </>
   )
 }

@@ -35,3 +35,10 @@ def test_create_get_update_delete_user() -> None:
 def test_create_user_rejects_invalid_email() -> None:
     response = client.post("/users", json={"name": "Bad Email", "email": "not-an-email"})
     assert response.status_code == 422
+
+
+def test_malformed_user_violates_the_declared_schema() -> None:
+    """Documents the intentional drift the frontend's Zod validator is meant to catch."""
+    response = client.get("/users/999")
+    assert response.status_code == 200
+    assert "email" not in response.json()

@@ -46,6 +46,26 @@ pnpm generate
 Do this once after `pnpm install`, and again any time you change a Pydantic
 model or endpoint in `apps/api`.
 
+## Testing the API seam
+
+The generated SDK doesn't just get TypeScript *types* from the OpenAPI schema —
+`openapi-ts.config.ts` also turns on the `zod` plugin's response validator
+(`{ name: '@hey-api/sdk', validator: { response: true } }`), so every response
+is parsed through the matching `zod.gen.ts` schema at runtime, not just cast to
+a type at compile time.
+
+To see this catch something, `GET /users/999` (see `MALFORMED_USER_ID` in
+[apps/api/app/routers/users.py](apps/api/app/routers/users.py)) always returns
+a payload that violates the `User` schema — it bypasses FastAPI's
+`response_model` by returning a raw `JSONResponse`, simulating a backend that
+has drifted from its own declared contract. In the app, click **View user 999
+(always returns a schema-invalid response)** on the user list, or open any
+user's detail page normally to see the happy path.
+
+This is also why `main.tsx` configures `QueryClient` to never retry a schema
+validation failure: retrying can't fix a payload that will never match the
+schema, so the app fails fast and shows the Zod issues instead of spinning.
+
 ## Running it
 
 ```bash
