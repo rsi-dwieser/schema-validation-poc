@@ -16,7 +16,7 @@ interesting part — the codegen pipeline — stays easy to see.
   schemas; `app/routers/users.py` and `app/routers/posts.py` have the CRUD
   endpoints (in-memory stores, no DB — this is a POC). Each router is tagged
   (`tags=["users"]` / `tags=["posts"]`), which the frontend config uses to
-  split generated output — see below.
+  organize generated SDK code by resource — see below.
 - [apps/web](apps/web) — Vite + React + TypeScript frontend. `src/client` is
   **generated, not committed** — see below.
 
@@ -32,30 +32,28 @@ pnpm install
 1. FastAPI derives an OpenAPI schema from the Pydantic models.
 2. `apps/api/scripts/export_openapi.py` writes that schema to `apps/api/openapi.json`.
 3. `apps/web/openapi-ts.config.ts` points `@hey-api/openapi-ts` at that file and
-   generates, for each tag, into its own subdirectory (`apps/web/src/client/users`,
-   `apps/web/src/client/posts`):
+   generates, into `apps/web/src/client`:
    - `types.gen.ts` — TS types mirroring the Pydantic models
    - `sdk.gen.ts` / `client.gen.ts` — a typed fetch client
    - `@tanstack/react-query.gen.ts` — `xOptions` / `xMutation` helpers for `useQuery`/`useMutation`
    - `zod.gen.ts` — Zod schemas (e.g. `zUserCreate`) mirroring the same models, used to
      validate the create/edit form client-side before it ever hits the network
 
-### Why the output is split by resource
+### Organizing generated code by resource
 
-`openapi-ts.config.ts` exports an **array** of two job configs (same
-`../api/openapi.json` input, different `parser.filters.tags.include`, different
-`output` directory) instead of one. hey-api's generated files are otherwise
-organized by *artifact type*, not by resource — a single job would put every
-tag's operations in the same `sdk.gen.ts`/`zod.gen.ts`/etc. no matter how many
-resources you add. Filtering by tag into separate jobs is what actually
-produces separate files per endpoint on disk.
+`sdk.gen.ts` is one file for the whole API, but it isn't a flat list of
+functions — the `@hey-api/sdk` plugin is configured with
+`operations: { strategy: 'byTags' }`, which groups generated functions into one
+class per OpenAPI tag (`Users`, `Posts`, `Default` for untagged operations like
+`/health`). `@tanstack/react-query.gen.ts` calls into `Users.listUsers(...)`,
+`Posts.createPost(...)`, etc. automatically.
 
-The tradeoff: each job is a fully independent generation, so `src/client/users`
-and `src/client/posts` each get their own copy of the fetch client core
-(`client.gen.ts`, `core/*`). `main.tsx` calls `setConfig()` on both. That's a
-small amount of duplication in exchange for genuinely independent per-resource
-output — worth revisiting if the domain grows enough to want a single shared
-client instead.
+We tried physically splitting the output into `src/client/users` and
+`src/client/posts` via separate per-tag generation jobs first, but that made
+each job regenerate its own independent copy of the fetch client core and the
+shared error types (`ValidationError`, `HTTPValidationError`) — duplication
+that isn't worth it for genuinely shared code. Grouping by tag within one
+shared output tree gets the "organized by resource" readability without it.
 
 Run the whole pipeline with:
 

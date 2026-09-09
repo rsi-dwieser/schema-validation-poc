@@ -2,16 +2,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
-import { client as postsClient } from './client/posts/client.gen'
-import { client as usersClient } from './client/users/client.gen'
+import { client } from './client/client.gen'
 import './index.css'
 import { isSchemaValidationError } from './lib/format-error'
 
-// openapi-ts.config.ts generates one job per tag, and each job produces its
-// own independent fetch client core — so each one needs its own setConfig.
-for (const client of [usersClient, postsClient]) {
-  client.setConfig({ baseUrl: 'http://localhost:8000' })
-}
+client.setConfig({
+  baseUrl: 'http://localhost:8000',
+})
 
 const queryClient = new QueryClient({
   defaultOptions: {

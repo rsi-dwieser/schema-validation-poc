@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import { getUserOptions } from '../client/users/@tanstack/react-query.gen'
+import { getUserOptions } from '../client/@tanstack/react-query.gen'
 import { formatApiError } from '../lib/format-error'
 
 type UserDetailProps = {

@@ -6,7 +6,7 @@ import {
   listUsersOptions,
   listUsersQueryKey,
   updateUserMutation,
-} from '../client/users/@tanstack/react-query.gen'
+} from '../client/@tanstack/react-query.gen'
 import { formatApiError } from '../lib/format-error'
 import { UserForm, type UserFormValues } from './UserForm'
 
