@@ -1,0 +1,16 @@
+{
+  "name": "schema-validation-poc",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"pnpm run api:dev\" \"pnpm run web:dev\"",
+    "generate": "pnpm run generate:openapi && pnpm --filter web run generate",
+    "generate:openapi": "cd apps/api && uv run python scripts/export_openapi.py",
+    "api:dev": "cd apps/api && uv run uvicorn app.main:app --reload",
+    "api:test": "cd apps/api && uv run pytest",
+    "web:dev": "pnpm --filter web run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0"
+  },
+  "packageManager": "pnpm@9.15.9+sha512.68046141893c66fad01c079231128e9afb89ef87e2691d69e4d40eee228988295fd4682181bae55b58418c3a253bde65a505ec7c5f9403ece5cc3cd37dcf2531"
+}
